@@ -1,0 +1,47 @@
+---
+title: "Week 2 Assignment, DATA-607"
+author: "Fernando Figueres"
+output: html_notebook
+---
+
+##Import Libraries
+```{r Import Libraries}
+library(DBI)
+library(RMySQL)
+```
+
+
+##Connect to Cloud Database
+```{r Connect to Database}
+mdb <- DBI::dbConnect(RMySQL::MySQL(),
+  dbname='movie_lens',
+  host = "35.243.235.220",
+  user = "root",
+  password = rstudioapi::askForPassword("Database password")
+)
+
+#code borrowed from https://dbplyr.tidyverse.org/articles/dbplyr.html
+```
+
+
+##Define SQL query to extract required data
+```{r}
+sql <- "SELECT `items`.`title` AS `title`, `items`.`date` AS `release date`, `ratingsdata`.`reviewdatetime` AS `review date & time`, `ratingsdata`.`rating` AS `rating`, `users`.`gender` AS `gender`, `users`.`age` AS `age`, `users`.`occupation` AS `occupation`, `users`.`zip` AS `zip` FROM ((`ratingsdata` JOIN `items` ON ((`items`.`itemid` = `ratingsdata`.`itemid`))) JOIN `users` ON ((`ratingsdata`.`userid` = `users`.`userid`))) ORDER BY items.date DESC"
+```
+
+
+##Data is retreived and loaded into a data frame
+```{r}
+mdata <- dbGetQuery(mdb, sql)
+```
+
+```{r}
+head(mdata)
+```
+
+##Sample graph
+```{r}
+hist(mdata$rating,main ="Rating Frequency")
+
+```
+
