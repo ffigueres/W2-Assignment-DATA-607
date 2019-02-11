@@ -1,3 +1,6 @@
+#Lines 44 onwards must be run after the data has been loaded
+
+
 CREATE DATABASE movie_lens;
 
 CREATE TABLE ratingsdata ( 

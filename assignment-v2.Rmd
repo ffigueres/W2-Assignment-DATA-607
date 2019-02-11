@@ -4,14 +4,16 @@ author: "Fernando Figueres"
 output: html_notebook
 ---
 
-##Import Libraries
+**Assignment: Upload movie review data into a MySQL database and then load the data into an R data frame.**
+
+###Import Libraries
 ```{r Import Libraries}
 library(DBI)
 library(RMySQL)
 ```
 
 
-##Connect to Cloud Database
+###Connect to Cloud Database
 ```{r Connect to Database}
 mdb <- DBI::dbConnect(RMySQL::MySQL(),
   dbname='movie_lens',
@@ -21,16 +23,18 @@ mdb <- DBI::dbConnect(RMySQL::MySQL(),
 )
 
 #code borrowed from https://dbplyr.tidyverse.org/articles/dbplyr.html
+
+#The data is based on the "Movielens 100k" dataset found at http://grouplens.org/datasets/movielens/100k/
 ```
 
 
-##Define SQL query to extract required data
+###Define SQL query to extract required data
 ```{r}
 sql <- "SELECT `items`.`title` AS `title`, `items`.`date` AS `release date`, `ratingsdata`.`reviewdatetime` AS `review date & time`, `ratingsdata`.`rating` AS `rating`, `users`.`gender` AS `gender`, `users`.`age` AS `age`, `users`.`occupation` AS `occupation`, `users`.`zip` AS `zip` FROM ((`ratingsdata` JOIN `items` ON ((`items`.`itemid` = `ratingsdata`.`itemid`))) JOIN `users` ON ((`ratingsdata`.`userid` = `users`.`userid`))) ORDER BY items.date DESC"
 ```
 
 
-##Data is retreived and loaded into a data frame
+###Data is retreived and loaded into a data frame
 ```{r}
 mdata <- dbGetQuery(mdb, sql)
 ```
@@ -39,9 +43,16 @@ mdata <- dbGetQuery(mdb, sql)
 head(mdata)
 ```
 
-##Sample graph
+###Sample graph
 ```{r}
 hist(mdata$rating,main ="Rating Frequency")
 
 ```
+
+###Bibliography
+
+F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets:
+History and Context. ACM Transactions on Interactive Intelligent
+Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages.
+DOI=http://dx.doi.org/10.1145/2827872
 
